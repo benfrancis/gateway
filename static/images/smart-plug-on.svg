@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   id="svg27224"
+   viewBox="0 0 128 128"
+   height="128"
+   width="128">
+  <defs
+     id="defs27226" />
+  <metadata
+     id="metadata27229">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-924.36216)"
+     id="layer1">
+    <path
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:1.60800004;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="M 63.999323,925.16613 A 63.196003,63.196503 0 0 0 0.80400002,988.36166 63.196003,63.196503 0 0 0 63.999323,1051.5582 63.196003,63.196503 0 0 0 127.19658,988.36166 63.196003,63.196503 0 0 0 63.999323,925.16613 Z m -20.728523,29.23623 3.56836,0 c 2.77,0 5,2.23 5,5.0001 l 0,11.8191 c 0,2.77 -2.23,5 -5,5 l -3.56836,0 c -2.77,0 -5,-2.23 -5,-5 l 0,-11.8191 c 0,-2.7701 2.23,-5.0001 5,-5.0001 z m 37.890633,0 3.56836,0 c 2.76999,0 5,2.23 5,5.0001 l 0,11.8191 c 0,2.77 -2.23001,5 -5,5 l -3.56836,0 c -2.77,0 -5,-2.23 -5,-5 l 0,-11.8191 c 0,-2.7701 2.23,-5.0001 5,-5.0001 z m -18.94532,34.1023 3.56836,0 c 2.77,0 5,2.23 5,5 l 0,11.81814 c 0,2.7701 -2.23,5.0001 -5,5.0001 l -3.56836,0 c -2.77,0 -5.000003,-2.23 -5.000003,-5.0001 l 0,-11.81814 c 0,-2.77 2.230003,-5 5.000003,-5 z"
+       id="path27200" />
+  </g>
+</svg>
