@@ -10,7 +10,7 @@
 
 'use strict';
 
-/* globals AddThingScreen, Thing, OnOffSwitch, BinarySensor */
+/* globals AddThingScreen, Thing, OnOffSwitch, BinarySensor, SmartPlug */
 
 // eslint-disable-next-line
 var ThingsScreen = {
@@ -39,7 +39,7 @@ var ThingsScreen = {
       this.showThing(thingId);
     } else {
       this.showThings();
-    }       
+    }
   },
 
   /**
@@ -65,12 +65,20 @@ var ThingsScreen = {
             case 'onOffSwitch':
               console.log('rendering new on/off switch');
               // eslint-disable-next-line no-unused-vars
-              var newOnOffSwitch = new OnOffSwitch(description);
+              //var newOnOffSwitch = new OnOffSwitch(description);
+              //TODO: Change this back to onOffSwitch once smartPlug implemented
+              // eslint-disable-next-line no-unused-vars
+              var newSmartPlug = new SmartPlug(description);
               break;
             case 'binarySensor':
               console.log('rendering new binary sensor');
               // eslint-disable-next-line no-unused-vars
               var newBinarySensor = new BinarySensor(description);
+              break;
+            case 'smartPlug':
+              console.log('rendering new smart plug');
+              // eslint-disable-next-line no-unused-vars
+              var newSmartPlug = new SmartPlug(description);
               break;
             default:
               console.log('rendering new thing');
@@ -111,7 +119,14 @@ var ThingsScreen = {
           case 'onOffSwitch':
             console.log('rendering new on/off switch');
             // eslint-disable-next-line no-unused-vars
-            var newOnOffSwitch = new OnOffSwitch(description);
+            //TODO: change back to on/off switch once smartPlug implemented
+            //var newOnOffSwitch = new OnOffSwitch(description);
+            var newSmartPlug = new SmartPlug(description);
+            break;
+          case 'smartPlug':
+            console.log('rendering new smart plug');
+            // eslint-disable-next-line no-unused-vars
+            var newSmartPlug = new SmartPlug(description);
             break;
           default:
             console.log('rendering new thing');

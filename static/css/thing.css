@@ -54,3 +54,26 @@
 .binary-sensor.untriggered .thing-icon {
   background-image: url('../images/binary-sensor-off.png');
 }
+
+/* Smart Plug */
+.smart-plug .thing-icon {
+  background-image: url('../images/smart-plug-off.svg');
+}
+
+.smart-plug.on .thing-icon {
+  background-image: url('../images/smart-plug-on.svg');
+}
+
+.smart-plug.off .thing-icon {
+  background-image: url('../images/smart-plug-off.svg');
+}
+
+.smart-plug-power {
+  font-weight: bold;
+  display: block;
+  padding-top: 9.5rem;
+}
+
+.smart-plug.on .smart-plug-power {
+  color: #5d9bc7;
+}
