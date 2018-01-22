@@ -127,14 +127,12 @@ var ThingsScreen = {
           case 'onOffSwitch':
             console.log('rendering new on/off switch');
             // eslint-disable-next-line no-unused-vars
-            //TODO: change back to on/off switch once smartPlug implemented
-            //var newOnOffSwitch = new OnOffSwitch(description);
-            var newSmartPlug = new SmartPlug(description);
+            var newOnOffSwitch = new OnOffSwitch(description);
             break;
           case 'smartPlug':
             console.log('rendering new smart plug');
             // eslint-disable-next-line no-unused-vars
-            var newSmartPlug = new SmartPlug(description);
+            var newSmartPlug = new SmartPlug(description, 'htmlDetail');
             break;
           case 'binarySensor':
             console.log('rendering new binary sensor');

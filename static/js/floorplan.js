@@ -83,6 +83,7 @@ var FloorplanScreen = {
             case 'multiLevelSwitch':
               console.log('rendering new multi level switch');
               this.things.push(new MultiLevelSwitch(description, 'svg'));
+              break;
             case 'smartPlug':
               console.log('rendering new smart plug');
               this.things.push(new SmartPlug(description, 'svg'));

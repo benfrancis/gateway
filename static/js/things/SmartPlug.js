@@ -10,16 +10,22 @@
 
 'use strict';
 
-/* globals Thing */
+/* globals Thing, OnOffSwitch, OnOffDetail, ThingDetailLayout */
 
 /**
  * Smart Plug Constructor.
  *
- * @extends Thing
+ * @extends OnOffSwitch
  * @param Object description Thing description object.
  * @param {String} format 'svg' or 'html'.
  */
 var SmartPlug = function(description, format) {
+  if (format === 'htmlDetail') {
+    this.details = {
+      on: new OnOffDetail(this)
+    };
+  }
+
   this.base = Thing;
   this.base(description, format);
   if (format == 'svg') {
@@ -37,22 +43,46 @@ var SmartPlug = function(description, format) {
   }
   this.powerLabel = this.element.querySelector('.smart-plug-power');
   this.updateStatus();
-  this.element.addEventListener('click', this.handleClick.bind(this));
+  if (format === 'htmlDetail') {
+    this.details.on.attach();
+    this.layout = new ThingDetailLayout(
+      this.element.querySelectorAll('.thing-detail-container'));
+  }
   return this;
 };
 
-SmartPlug.prototype = Object.create(Thing.prototype);
+SmartPlug.prototype = Object.create(OnOffSwitch.prototype);
+
+SmartPlug.prototype.iconView = function() {
+  return `<div class="thing-icon">
+    <span class="smart-plug-power">0W</span>
+    </div>`;
+};
 
 /**
  * HTML view for on/off switch.
  */
 SmartPlug.prototype.htmlView = function() {
-  return '<div class="thing smart-plug">' +
-         '  <div class="thing-icon">' +
-         '    <span class="smart-plug-power">0W</span>' +
-         '  </div>' +
-         '  <span class="thing-name">' + this.name + '</span>' +
-         '</div>';
+  return `<a href="${this.href}">
+    <div class="thing smart-plug">
+      ${this.iconView()}
+      <span class="thing-name">${this.name}</span>
+    </div>
+  </a>`;
+};
+
+/**
+ * HTML detail view for Color bulb
+ */
+SmartPlug.prototype.htmlDetailView = function() {
+  return `<div class="smart-plug-container">
+    <div class="thing">
+      ${this.iconView()}
+    </div>
+    <div class="thing-detail-container">
+    </div>
+    ${this.details.on.view()}
+  </div>`;
 };
 
 /**
@@ -168,17 +198,6 @@ SmartPlug.prototype.showPower = function(power) {
     this.powerLabel.innerText = power + 'W';
   } else {
     this.powerLabel.innerText = '0W';
-  }
-};
-
-/**
- * Handle a click on the on/off switch.
- */
-SmartPlug.prototype.handleClick = function() {
-  if (this.properties.on === true) {
-    this.turnOff();
-  } else if (this.properties.on === false) {
-    this.turnOn();
   }
 };
 

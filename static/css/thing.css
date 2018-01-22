@@ -140,17 +140,18 @@
 .thing-detail-layout-link {
   stroke: white;
   stroke-width: 2px;
+}
 
 /* Smart Plug */
 .smart-plug .thing-icon {
   background-image: url('../images/smart-plug-off.svg');
 }
 
-.smart-plug.on .thing-icon {
+.smart-plug-container.on .thing-icon {
   background-image: url('../images/smart-plug-on.svg');
 }
 
-.smart-plug.off .thing-icon {
+.smart-plug-container.off .thing-icon {
   background-image: url('../images/smart-plug-off.svg');
 }
 
@@ -160,7 +161,7 @@
   padding-top: 9.5rem;
 }
 
-.smart-plug.on .smart-plug-power {
+.smart-plug-container.on .smart-plug-power {
   color: #5d9bc7;
 }
 
@@ -200,4 +201,3 @@
   padding-top: 0.2rem;
   font-weight: bold;
 }
-
