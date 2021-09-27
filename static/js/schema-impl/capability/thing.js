@@ -167,7 +167,14 @@ class Thing {
           }
         }
 
-        const href = property.forms[0];
+        let href;
+        for (const form of property.forms) {
+          if (form.op === undefined ||
+            form.op === Constants.WoTOperation.READ_PROPERTY) {
+            href = form.href;
+            break;
+          }
+        }
 
         if (!href) {
           continue;
@@ -295,9 +302,10 @@ class Thing {
           const action = description.actions[name];
 
           let href;
-          for (const link of description.actions[name].links) {
-            if (link.rel === 'action') {
-              href = link.href;
+          for (const form of description.actions[name].forms) {
+            if (form.op === undefined ||
+              form.op === Constants.WoTOperation.INVOKE_ACTION) {
+              href = form.href;
               break;
             }
           }

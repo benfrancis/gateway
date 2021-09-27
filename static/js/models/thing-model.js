@@ -40,14 +40,14 @@ class ThingModel extends Model {
     // Parse group id of Thing
     this.group_id = description.group_id;
 
-    // Parse events URL
-    for (const link of description.links) {
-      switch (link.rel) {
-        case 'events':
-          this.eventsHref = new URL(link.href, App.ORIGIN);
+    // Parse properties and events URLs
+    for (const form of description.forms) {
+      switch (form.op) {
+        case Constants.WoTOperation.SUBSCRIBE_ALL_EVENTS:
+          this.eventsHref = new URL(form.href, App.ORIGIN);
           break;
-        case 'properties':
-          this.propertiesHref = new URL(link.href, App.ORIGIN);
+        case Constants.WoTOperation.READ_ALL_PROPERTIES:
+          this.propertiesHref = new URL(form.href, App.ORIGIN);
           break;
         default:
           break;
