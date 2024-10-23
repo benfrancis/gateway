@@ -46,6 +46,7 @@ parts:
       - libpng-dev
       - libudev-dev
       - libusb-1.0-0-dev
+      - libdbus-1-dev
     override-build: |
       craftctl default
       npm install --only-dev
