@@ -105,9 +105,11 @@ export class LinuxUbuntuCorePlatform extends BasePlatform {
    * @returns {Promise<boolean>} Promise that resolves true if successful and false if not.
    */
   async setLanModeAsync(mode: string, options: Record<string, any>): Promise<boolean> {
+    let lanDevice: string;
     let lanConnection: string;
     return NetworkManager.getEthernetDevices().then((devices) => {
-      return NetworkManager.getDeviceConnection(devices[0]);
+      lanDevice = devices[0];
+      return NetworkManager.getDeviceConnection(lanDevice);
     }).then((connection) => {
       lanConnection = connection;
       // First get current settings to carry over some values
@@ -159,6 +161,8 @@ export class LinuxUbuntuCorePlatform extends BasePlatform {
         return false;
       }
       return NetworkManager.setConnectionSettings(lanConnection, settings);
+    }).then(() => {
+      return NetworkManager.activateConnection(lanConnection, lanDevice);
     }).catch((error) => {
       console.error('Error setting LAN settings: ' + error);
       return false;

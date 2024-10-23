@@ -207,6 +207,37 @@ class NetworkManager {
       });
     });
   }
+
+  /**
+   * Activate a network connection.
+   * 
+   * @param connection The DBus object path of the connection settings to apply.
+   * @param device The DBus object path of the device to apply settings to.
+   * @returns {Promise<string>} A Promise which resolves with true on success
+   *  or rejects on failure.
+   */
+  activateConnection(connection: string, device: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+        '/org/freedesktop/NetworkManager',
+        'org.freedesktop.NetworkManager',
+        function(error, iface) {
+        if (error) {
+          console.error(error);
+          reject();
+          return;
+        }
+        iface.ActivateConnection(connection, device, '/', function(error: Error) {
+          if (error) {
+            console.error(error);
+            reject();
+            return;
+          }
+          resolve(true);
+        });
+      });
+    });   
+  }
   
   /**
    * Get an IPv4 configuration for a given device path.
