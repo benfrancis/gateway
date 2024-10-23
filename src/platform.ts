@@ -14,6 +14,7 @@ import LinuxArchPlatform from './platforms/linux-arch';
 import LinuxDebianPlatform from './platforms/linux-debian';
 import LinuxRaspbianPlatform from './platforms/linux-raspbian';
 import LinuxUbuntuPlatform from './platforms/linux-ubuntu';
+import LinuxUbuntuCorePlatform from './platforms/linux-ubuntu-core';
 import {
   LanMode,
   NetworkAddresses,
@@ -68,7 +69,7 @@ export function getOS(): string {
     return 'linux-unknown';
   }
 
-  // Otherwise try to detect if running on Ubuntu Core.
+  // Otherwise try to detect Ubuntu or Ubuntu Core from inside a snap
   try {
     const osReleaseLines = fs
       .readFileSync('/var/lib/snapd/hostfs/etc/os-release', {
@@ -85,10 +86,15 @@ export function getOS(): string {
         let id = line.substring(3, line.length);
         // Remove any quotation marks
         id = id.replace(/"/g, '');
-        if (id == 'ubuntu-core') {
-          return 'linux-ubuntu-core';
-        } else {
-          console.log('Unknown host Linux distribution');
+        console.log('*** OS id is :' + id);
+        switch(id) {
+          case 'ubuntu':
+            return 'linux-ubuntu';
+          case 'ubuntu-core':
+            return 'linux-ubuntu-core';
+          default:
+            console.log('Unknown host Linux distribution');
+            break;
         }
       }
     }
@@ -194,6 +200,9 @@ switch (getOS()) {
     break;
   case 'linux-ubuntu':
     platform = LinuxUbuntuPlatform;
+    break;
+  case 'linux-ubuntu-core':
+    platform = LinuxUbuntuCorePlatform;
     break;
   default:
     platform = null;
