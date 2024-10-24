@@ -1,10 +1,9 @@
-
 import DBus from 'dbus';
-import {WirelessNetwork} from '../types';
+import { WirelessNetwork } from '../types';
 
 /**
  * Network Manager.
- * 
+ *
  * Manages networking devices over DBus.
  */
 class NetworkManager {
@@ -12,72 +11,76 @@ class NetworkManager {
 
   /**
    * Get a list of network adapters from the system network manager.
-   * 
+   *
    * @returns {Array} An array of DBus object paths.
    */
   getDevices(): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+      this.systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         '/org/freedesktop/NetworkManager',
         'org.freedesktop.NetworkManager',
-        function(error, iface) {
-        if (error) {
-          console.error('Error accessing the NetworkManager DBus interface: ' + error);
-          reject();
-          return;
-        }
-        iface.GetAllDevices(function(error: Error, result: string[]) {
+        function (error, iface) {
           if (error) {
-            console.error('Error calling GetAllDevices on NetworkManager DBus: ' + error);
+            console.error(`Error accessing the NetworkManager DBus interface: ${error}`);
             reject();
             return;
           }
-          resolve(result);
-        });
-      });
+          iface.GetAllDevices(function (error: Error, result: string[]) {
+            if (error) {
+              console.error(`Error calling GetAllDevices on NetworkManager DBus: ${error}`);
+              reject();
+              return;
+            }
+            resolve(result);
+          });
+        }
+      );
     });
   }
-  
+
   /**
    * Get the device type for a given network adapter.
    *
    * @param {String} path Object path for device.
-   * @returns {Promise<Integer>} Resolves with a device type
+   * @returns {Promise<number>} Resolves with a device type
    *  (1 is Ethernet, 2 is Wi-Fi...).
    */
-  getDeviceType(path: string) {
+  getDeviceType(path: string): Promise<number> {
     return new Promise((resolve, reject) => {
-      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+      this.systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',
-        function(error, iface) {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.getProperty('DeviceType', function(error, value) {
+        function (error, iface) {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          resolve(value);
-        });
-      });
+          iface.getProperty('DeviceType', function (error, value) {
+            if (error) {
+              console.error(error);
+              reject();
+              return;
+            }
+            resolve(value);
+          });
+        }
+      );
     });
   }
-  
+
   /**
    * Get a list of Ethernet network adapters from the system network manager.
-   * 
-   * @returns {Promise<Array<string>>} A promise which resolves with an array 
+   *
+   * @returns {Promise<Array<string>>} A promise which resolves with an array
    *  of DBus object paths.
    */
   async getEthernetDevices(): Promise<string[]> {
     // Get a list of all network adapter devices
-    let devices = await this.getDevices();
-    let ethernetDevices: string[] = [];
+    const devices = await this.getDevices();
+    const ethernetDevices: string[] = [];
     // Filter by type
     for (const device of devices) {
       const type = await this.getDeviceType(device);
@@ -87,17 +90,17 @@ class NetworkManager {
     }
     return ethernetDevices;
   }
-  
+
   /**
    * Get a list of Wi-Fi network adapters from the system network manager.
-   * 
-   * @returns {Promise<Array<string>>} A promise which resolves with an array 
+   *
+   * @returns {Promise<Array<string>>} A promise which resolves with an array
    *  of DBus object paths.
    */
   async getWifiDevices(): Promise<string[]> {
     // Get a list of all network adapter devices
-    let devices = await this.getDevices();
-    let wifiDevices: string[] = [];
+    const devices = await this.getDevices();
+    const wifiDevices: string[] = [];
     // Filter by type
     for (const device of devices) {
       const type = await this.getDeviceType(device);
@@ -112,50 +115,54 @@ class NetworkManager {
    * Get the active connection associated with a device.
    *
    * @param {String} path Object path for device.
-   * @returns {Promise<String>} Resolves with object path of the active 
+   * @returns {Promise<String>} Resolves with object path of the active
    *  connection object associated with this device.
    */
   getDeviceConnection(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const systemBus = this.systemBus;
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',
-        function(error, iface) {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.getProperty('ActiveConnection', function(error, activeConnectionPath) {
+        function (error, iface) {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          systemBus.getInterface('org.freedesktop.NetworkManager',
-            activeConnectionPath,
-            'org.freedesktop.NetworkManager.Connection.Active',
-            function(error, iface) {
+          iface.getProperty('ActiveConnection', function (error, activeConnectionPath) {
             if (error) {
               console.error(error);
               reject();
               return;
             }
-            iface.getProperty('Connection', function(error, value) {
-              if (error) {
-                console.error(error);
-                reject();
-                return;
+            systemBus.getInterface(
+              'org.freedesktop.NetworkManager',
+              activeConnectionPath,
+              'org.freedesktop.NetworkManager.Connection.Active',
+              function (error, iface) {
+                if (error) {
+                  console.error(error);
+                  reject();
+                  return;
+                }
+                iface.getProperty('Connection', function (error, value) {
+                  if (error) {
+                    console.error(error);
+                    reject();
+                    return;
+                  }
+                  resolve(value);
+                });
               }
-              resolve(value);
-            });
+            );
           });
-        });
-      });
+        }
+      );
     });
   }
-  
+
   /**
    * Get the settings for a given connection.
    *
@@ -164,53 +171,57 @@ class NetworkManager {
    */
   getConnectionSettings(path: string): Promise<Record<string, any>> {
     return new Promise((resolve, reject) => {
-      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+      this.systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Settings.Connection',
-        function(error, iface) {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.GetSettings(function(error: Error, value: any) {
+        function (error, iface) {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          resolve(value);
-        });
-      });
+          iface.GetSettings(function (error: Error, value: any) {
+            if (error) {
+              console.error(error);
+              reject();
+              return;
+            }
+            resolve(value);
+          });
+        }
+      );
     });
   }
-  
+
   setConnectionSettings(path: string, settings: Record<string, any>): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+      this.systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Settings.Connection',
-        function(error, iface) {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.Update(settings, function(error: Error) {
+        function (error, iface) {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          resolve(true);
-        });
-      });
+          iface.Update(settings, function (error: Error) {
+            if (error) {
+              console.error(error);
+              reject();
+              return;
+            }
+            resolve(true);
+          });
+        }
+      );
     });
   }
 
   /**
    * Activate a network connection.
-   * 
+   *
    * @param connection The DBus object path of the connection settings to apply.
    * @param device The DBus object path of the device to apply settings to.
    * @returns {Promise<string>} A Promise which resolves with true on success
@@ -218,27 +229,29 @@ class NetworkManager {
    */
   activateConnection(connection: string, device: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+      this.systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         '/org/freedesktop/NetworkManager',
         'org.freedesktop.NetworkManager',
-        function(error, iface) {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.ActivateConnection(connection, device, '/', function(error: Error) {
+        function (error, iface) {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          resolve(true);
-        });
-      });
-    });   
+          iface.ActivateConnection(connection, device, '/', function (error: Error) {
+            if (error) {
+              console.error(error);
+              reject();
+              return;
+            }
+            resolve(true);
+          });
+        }
+      );
+    });
   }
-  
+
   /**
    * Get an IPv4 configuration for a given device path.
    *
@@ -248,97 +261,103 @@ class NetworkManager {
   getDeviceIp4Config(path: string): Promise<any> {
     const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',
-        function(error, iface) {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.getProperty('Ip4Config', function(error, ip4ConfigPath) {
+        function (error, iface) {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          systemBus.getInterface('org.freedesktop.NetworkManager',
-            ip4ConfigPath,
-            'org.freedesktop.NetworkManager.IP4Config',
-            function(error, iface) {
+          iface.getProperty('Ip4Config', function (error, ip4ConfigPath) {
             if (error) {
               console.error(error);
               reject();
               return;
             }
-            iface.getProperty('AddressData', function(error, value) {
-              if (error) {
-                console.error(error);
-                reject();
-                return;
+            systemBus.getInterface(
+              'org.freedesktop.NetworkManager',
+              ip4ConfigPath,
+              'org.freedesktop.NetworkManager.IP4Config',
+              function (error, iface) {
+                if (error) {
+                  console.error(error);
+                  reject();
+                  return;
+                }
+                iface.getProperty('AddressData', function (error, value) {
+                  if (error) {
+                    console.error(error);
+                    reject();
+                    return;
+                  }
+                  resolve(value);
+                });
               }
-              resolve(value);
-            });
+            );
           });
-        });
-      });
+        }
+      );
     });
   }
-  
+
   /**
    * Get the SSID of the Wi-Fi access point with a given DBUS object path.
-   * 
+   *
    * @param {string} path DBUS object path of the Wi-Fi access point.
    * @returns {Promise<string>} The SSID of the access point.
    */
   getAccessPointSsid(path: string): Promise<string> {
     const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
-        function(error, iface) {
-          if(error) {
+        function (error, iface) {
+          if (error) {
             console.error(error);
             reject();
             return;
           }
-          iface.getProperty('Ssid', function(error, value: any) {
-            if(error) {
+          iface.getProperty('Ssid', function (error, value: any) {
+            if (error) {
               console.error(error);
               reject();
               return;
             }
             // Convert SSID from byte array to string.
-            let ssid = String.fromCharCode(...value);
+            const ssid = String.fromCharCode(...value);
             resolve(ssid);
           });
         }
-      )
+      );
     });
   }
-  
+
   /**
    * Get the signal strength of the Wi-Fi access point with a given DBUS object path.
-   * 
+   *
    * @param {string} path DBUS object path of the Wi-Fi access point.
    * @returns {Promise<number>} The strength of the signal as a percentage.
    */
   getAccessPointStrength(path: string): Promise<number> {
     const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
-        function(error, iface) {
-          if(error) {
+        function (error, iface) {
+          if (error) {
             console.error(error);
             reject();
             return;
           }
-          iface.getProperty('Strength', function(error, value: any) {
-            if(error) {
+          iface.getProperty('Strength', function (error, value: any) {
+            if (error) {
               console.error(error);
               reject();
               return;
@@ -346,29 +365,31 @@ class NetworkManager {
             resolve(value);
           });
         }
-    )});
+      );
+    });
   }
-  
+
   /**
    * Gets the encryption status of the Wi-Fi access point with a given DBUS object path.
-   * 
+   *
    * @param {string} path DBUS object path of the Wi-Fi access point.
    * @returns {Promise<boolean>} true if encrypted, false if not.
    */
   async getAccessPointSecurity(path: string): Promise<boolean> {
     const systemBus = this.systemBus;
     const wpaFlagRequest = new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
-        function(error, iface) {
-          if(error) {
+        function (error, iface) {
+          if (error) {
             console.error(error);
             reject();
             return;
           }
-          iface.getProperty('WpaFlags', function(error, value: any) {
-            if(error) {
+          iface.getProperty('WpaFlags', function (error, value: any) {
+            if (error) {
               console.error(error);
               reject();
               return;
@@ -376,19 +397,21 @@ class NetworkManager {
             resolve(value);
           });
         }
-    )});
+      );
+    });
     const wpa2FlagRequest = new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
-        function(error, iface) {
-          if(error) {
+        function (error, iface) {
+          if (error) {
             console.error(error);
             reject();
             return;
           }
-          iface.getProperty('RsnFlags', function(error, value: any) {
-            if(error) {
+          iface.getProperty('RsnFlags', function (error, value: any) {
+            if (error) {
               console.error(error);
               reject();
               return;
@@ -396,22 +419,23 @@ class NetworkManager {
             resolve(value);
           });
         }
-    )});
+      );
+    });
     // Request WPA and WPA2 flags for access point.
-    let requests = [];
+    const requests = [];
     requests.push(wpaFlagRequest);
     requests.push(wpa2FlagRequest);
-    let responses = await Promise.all(requests);
+    const responses = await Promise.all(requests);
     if (responses[0] == 0 && responses[1] == 0) {
       return false;
     } else {
       return true;
     }
   }
-  
+
   /**
    * Get details about an access point reachable from a wireless device.
-   * 
+   *
    * @param {string} path The DBUS path of an access point.
    * @param {string|null} activeAccessPoint: The DBUS path of the active access point, if any.
    * @returns {WirelessNetwork} Wireless network object of the form:
@@ -424,12 +448,15 @@ class NetworkManager {
    * }
    * @throws {Error} Error if not able to get all access point details.
    */
-  async getAccessPointDetails(path: string, activeAccessPoint: string|null): Promise<WirelessNetwork> {
+  async getAccessPointDetails(
+    path: string,
+    activeAccessPoint: string | null
+  ): Promise<WirelessNetwork> {
     let ssid: string;
     let strength: number;
     let security: boolean;
     let connected: boolean;
-    if(path === activeAccessPoint) {
+    if (path === activeAccessPoint) {
       connected = true;
     } else {
       connected = false;
@@ -438,21 +465,21 @@ class NetworkManager {
       ssid = await this.getAccessPointSsid(path);
       strength = await this.getAccessPointStrength(path);
       security = await this.getAccessPointSecurity(path);
-    } catch(error) {
+    } catch (error) {
       console.error(error);
       throw new Error('Failed to get access point details');
     }
-    let response = {
-      'ssid': ssid,
-      'quality': strength,
-      'encryption': security,
-      'configured': connected, // TODO: Figure out what this is actually meant to mean
-      'connected': connected
+    const response = {
+      ssid: ssid,
+      quality: strength,
+      encryption: security,
+      configured: connected, // TODO: Figure out what this is actually meant to mean
+      connected: connected,
     };
     // Resolve with access point details
     return response;
   }
-  
+
   /**
    * Get the active Access Point a given Wi-Fi adapter is connected to.
    *
@@ -462,64 +489,68 @@ class NetworkManager {
   getActiveAccessPoint(path: string): Promise<string> {
     const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device.Wireless',
         (error, iface) => {
-        if (error) {
-          console.error(error);
-          reject();
-          return;
-        }
-        iface.getProperty('ActiveAccessPoint', (error, accessPointPath) => {
           if (error) {
-            console.log('Unable to detect a connected Wi-Fi access point');
+            console.error(error);
             reject();
             return;
           }
-          resolve(accessPointPath);
-        });
-      });
+          iface.getProperty('ActiveAccessPoint', (error, accessPointPath) => {
+            if (error) {
+              console.log('Unable to detect a connected Wi-Fi access point');
+              reject();
+              return;
+            }
+            resolve(accessPointPath);
+          });
+        }
+      );
     });
   }
-  
+
   /**
    * Get a list of access points for the wireless device at the given path.
-   * 
+   *
    * @param {String} path The DBUS object path of a wireless device.
    * @returns {Promise<Array<string>>} An array of DBus object paths of Access Points.
    */
   getWifiAccessPoints(path: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      this.systemBus.getInterface('org.freedesktop.NetworkManager',
+      this.systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device.Wireless',
-        function(error, iface) {
-        if (error) {
-          console.error('Error getting a wireless device via NetworkManager: ' + error);
-          reject();
-          return;
-        }
-        iface.getProperty('AccessPoints', function(error: Error | null, result: any) {
+        function (error, iface) {
           if (error) {
-            console.error('Error getting AccessPoints from a wireless device: ' + error);
+            console.error(`Error getting a wireless device via NetworkManager: ${error}`);
             reject();
             return;
           }
-          resolve(result);
-        });
-      });
+          iface.getProperty('AccessPoints', function (error: Error | null, result: any) {
+            if (error) {
+              console.error(`Error getting AccessPoints from a wireless device: ${error}`);
+              reject();
+              return;
+            }
+            resolve(result);
+          });
+        }
+      );
     });
   }
-  
+
   /**
    * Get an access point DBUS object bath for a given SSID.
-   * 
+   *
    * @param {string} ssid The SSID of the network to search for.
-   * @returns {Promise<string>} A Promise which resolves with the DBUS object 
+   * @returns {Promise<string>} A Promise which resolves with the DBUS object
    *   path of the access point, or null if not found;
    */
-  async getAccessPointbySsid(ssid: string): Promise<string|null> {
+  async getAccessPointbySsid(ssid: string): Promise<string | null> {
     const wifiDevices = await this.getWifiDevices();
     const wifiAccessPoints = await this.getWifiAccessPoints(wifiDevices[0]);
     // Return the first access point that has a matching SSID
@@ -532,7 +563,7 @@ class NetworkManager {
     }
     return null;
   }
-  
+
   /**
    * Connect to Wi-Fi access point.
    *
@@ -543,70 +574,80 @@ class NetworkManager {
    * @param {string} password provided by user.
    * @returns {Promise}
    */
-  connectToWifiAccessPoint(wifiDevice: string, accessPoint: string,
-    ssid: string, secure: boolean, password: string): Promise<any> {
+  connectToWifiAccessPoint(
+    wifiDevice: string,
+    accessPoint: string,
+    ssid: string,
+    secure: boolean,
+    password: string
+  ): Promise<any> {
     const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         '/org/freedesktop/NetworkManager',
         'org.freedesktop.NetworkManager',
         (error, iface) => {
-
-        if (error) {
-          reject(error);
-          return;
-        }
-
-        // Convert SSID to an array of bytes
-        let ssidBytes = [];
-        for (let i = 0; i < ssid.length; ++i) {
-          ssidBytes.push(ssid.charCodeAt(i));
-        }
-
-        // Assemble connection information
-        let connectionInfo: Record<string, unknown> = {
-          '802-11-wireless': {
-            ssid: ssidBytes,
-          },
-          'connection': {
-            id: ssid,
-            type: '802-11-wireless',
-          }
-        };
-
-        if (secure) {
-          connectionInfo['802-11-wireless-security'] = {
-            'key-mgmt': 'wpa-psk',
-            'psk': password,
-          }
-        }
-
-        // TODO: Should we re-use an existing connection rather than add a new one
-        // if one already exists?
-        iface.AddAndActivateConnection(connectionInfo, wifiDevice,
-          accessPoint, function(error: Error, value: any) {
           if (error) {
             reject(error);
             return;
           }
-          resolve(value);
-        });
 
-      });
+          // Convert SSID to an array of bytes
+          const ssidBytes = [];
+          for (let i = 0; i < ssid.length; ++i) {
+            ssidBytes.push(ssid.charCodeAt(i));
+          }
+
+          // Assemble connection information
+          const connectionInfo: Record<string, unknown> = {
+            '802-11-wireless': {
+              ssid: ssidBytes,
+            },
+            connection: {
+              id: ssid,
+              type: '802-11-wireless',
+            },
+          };
+
+          if (secure) {
+            connectionInfo['802-11-wireless-security'] = {
+              'key-mgmt': 'wpa-psk',
+              psk: password,
+            };
+          }
+
+          // TODO: Should we re-use an existing connection rather than add a new one
+          // if one already exists?
+          iface.AddAndActivateConnection(
+            connectionInfo,
+            wifiDevice,
+            accessPoint,
+            function (error: Error, value: any) {
+              if (error) {
+                reject(error);
+                return;
+              }
+              resolve(value);
+            }
+          );
+        }
+      );
     });
   }
-  
+
   /**
    * Disconnect a network device.
-   * 
+   *
    * @param {string} path DBUS object path of device.
-   * @returns {Promise<any>} A promise which resolves upon successful 
+   * @returns {Promise<any>} A promise which resolves upon successful
    *   deactivation or rejects on failure.
    */
   disconnectNetworkDevice(path: string): Promise<any> {
     const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface('org.freedesktop.NetworkManager',
+      systemBus.getInterface(
+        'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',
         (error, iface) => {
@@ -614,14 +655,15 @@ class NetworkManager {
             reject(error);
             return;
           }
-          iface.Disconnect(function(error: Error, value: any) {
+          iface.Disconnect(function (error: Error, value: any) {
             if (error) {
               reject(error);
               return;
             }
             resolve(value);
           });
-      })
+        }
+      );
     });
   }
 }

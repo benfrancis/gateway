@@ -106,6 +106,7 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mkdirp": "^1.0.1",
     "@types/ncp": "^2.0.4",
+    "@types/netmask": "^2.0.5",
     "@types/node": "^14.14.31",
     "@types/node-fetch": "^2.5.8",
     "@types/node-getopt": "^0.2.31",

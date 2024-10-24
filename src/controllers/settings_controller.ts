@@ -398,7 +398,6 @@ function build(): express.Router {
   });
 
   controller.get('/network/lan', auth, (_request, response) => {
-    
     if (Platform.implemented('getLanModeAsync')) {
       Platform.getLanModeAsync().then((mode: LanMode) => {
         response.json(mode);
@@ -419,7 +418,7 @@ function build(): express.Router {
     const mode = request.body.mode;
     const options = request.body.options;
 
-    if(Platform.implemented('setLanModeAsync')) {
+    if (Platform.implemented('setLanModeAsync')) {
       Platform.setLanModeAsync(mode, options).then((result: boolean) => {
         if (result == true) {
           response.status(200).json({});
@@ -447,11 +446,11 @@ function build(): express.Router {
   });
 
   controller.get('/network/wireless/networks', auth, (_request, response) => {
-    if(Platform.implemented('scanWirelessNetworksAsync')) {
+    if (Platform.implemented('scanWirelessNetworksAsync')) {
       Platform.scanWirelessNetworksAsync().then((networks) => {
         response.json(networks);
-      })
-    } else if(Platform.implemented('scanWirelessNetworks')) {
+      });
+    } else if (Platform.implemented('scanWirelessNetworks')) {
       response.json(Platform.scanWirelessNetworks());
     } else {
       response.status(500).send('Wireless scanning not implemented');
@@ -469,15 +468,17 @@ function build(): express.Router {
     const options = request.body.options;
 
     if (Platform.implemented('setWirelessModeAsync')) {
-      Platform.setWirelessModeAsync(enabled, mode, options).then((result) => {
-        if(result === true) {
-          response.status(200).json({});
-        } else {
+      Platform.setWirelessModeAsync(enabled, mode, options)
+        .then((result) => {
+          if (result === true) {
+            response.status(200).json({});
+          } else {
+            response.status(500).send('Failed to update wireless configuration');
+          }
+        })
+        .catch(() => {
           response.status(500).send('Failed to update wireless configuration');
-        }
-      }).catch(() => {
-        response.status(500).send('Failed to update wireless configuration');
-      })
+        });
     } else if (Platform.implemented('setWirelessMode')) {
       if (Platform.setWirelessMode(enabled, mode, options)) {
         response.status(200).json({});

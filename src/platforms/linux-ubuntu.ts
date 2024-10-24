@@ -11,49 +11,49 @@ import LinuxRaspbianPlatform from './linux-raspbian';
 import { SelfUpdateStatus } from './types';
 
 class LinuxUbuntuPlatform extends LinuxUbuntuCorePlatform {
-    /**
+  /**
    * Determine whether or not the gateway can auto-update itself.
    *
    * @returns {Object} {available: <bool>, enabled: <bool>}
    */
-    getSelfUpdateStatus(): SelfUpdateStatus {
-      return {
-        available: false,
-        enabled: false,
-      };
-    }
+  getSelfUpdateStatus(): SelfUpdateStatus {
+    return {
+      available: false,
+      enabled: false,
+    };
+  }
 
-    getDhcpServerStatus(): boolean {
-      return LinuxRaspbianPlatform.getDhcpServerStatus();
-    }
-  
-    getHostname(): string {
-      return LinuxRaspbianPlatform.getHostname();
-    }
-  
-    getMacAddress(device: string): string | null {
-      return LinuxRaspbianPlatform.getMacAddress(device);
-    }
-  
-    getMdnsServerStatus(): boolean {
-      return LinuxRaspbianPlatform.getMdnsServerStatus();
-    }
-  
-    getValidTimezones(): string[] {
-      return LinuxRaspbianPlatform.getValidTimezones();
-    }
-  
-    getTimezone(): string {
-      return LinuxRaspbianPlatform.getTimezone();
-    }
-  
-    getValidWirelessCountries(): string[] {
-      return LinuxRaspbianPlatform.getValidWirelessCountries();
-    }
-  
-    getNtpStatus(): boolean {
-      return LinuxRaspbianPlatform.getNtpStatus();
-    }
+  getDhcpServerStatus(): boolean {
+    return LinuxRaspbianPlatform.getDhcpServerStatus();
+  }
+
+  getHostname(): string {
+    return LinuxRaspbianPlatform.getHostname();
+  }
+
+  getMacAddress(device: string): string | null {
+    return LinuxRaspbianPlatform.getMacAddress(device);
+  }
+
+  getMdnsServerStatus(): boolean {
+    return LinuxRaspbianPlatform.getMdnsServerStatus();
+  }
+
+  getValidTimezones(): string[] {
+    return LinuxRaspbianPlatform.getValidTimezones();
+  }
+
+  getTimezone(): string {
+    return LinuxRaspbianPlatform.getTimezone();
+  }
+
+  getValidWirelessCountries(): string[] {
+    return LinuxRaspbianPlatform.getValidWirelessCountries();
+  }
+
+  getNtpStatus(): boolean {
+    return LinuxRaspbianPlatform.getNtpStatus();
+  }
 }
 
 export default new LinuxUbuntuPlatform();

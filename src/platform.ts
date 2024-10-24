@@ -86,7 +86,7 @@ export function getOS(): string {
         let id = line.substring(3, line.length);
         // Remove any quotation marks
         id = id.replace(/"/g, '');
-        switch(id) {
+        switch (id) {
           case 'ubuntu':
             return 'linux-ubuntu';
           case 'ubuntu-core':
@@ -220,12 +220,18 @@ export const getMacAddress = wrapPlatform<string | null>(platform, 'getMacAddres
 export const getMdnsServerStatus = wrapPlatform<boolean>(platform, 'getMdnsServerStatus');
 export const setMdnsServerStatus = wrapPlatform<boolean>(platform, 'setMdnsServerStatus');
 export const getNetworkAddresses = wrapPlatform<NetworkAddresses>(platform, 'getNetworkAddresses');
-export const getNetworkAddressesAsync = wrapPlatform<Promise<NetworkAddresses>>(platform, 'getNetworkAddressesAsync');
+export const getNetworkAddressesAsync = wrapPlatform<Promise<NetworkAddresses>>(
+  platform,
+  'getNetworkAddressesAsync'
+);
 export const getSshServerStatus = wrapPlatform<boolean>(platform, 'getSshServerStatus');
 export const setSshServerStatus = wrapPlatform<boolean>(platform, 'setSshServerStatus');
 export const getWirelessMode = wrapPlatform<WirelessMode>(platform, 'getWirelessMode');
 export const setWirelessMode = wrapPlatform<boolean>(platform, 'setWirelessMode');
-export const setWirelessModeAsync = wrapPlatform<Promise<boolean>>(platform, 'setWirelessModeAsync');
+export const setWirelessModeAsync = wrapPlatform<Promise<boolean>>(
+  platform,
+  'setWirelessModeAsync'
+);
 export const restartGateway = wrapPlatform<boolean>(platform, 'restartGateway');
 export const restartSystem = wrapPlatform<boolean>(platform, 'restartSystem');
 export const scanWirelessNetworks = wrapPlatform<WirelessNetwork[]>(

@@ -876,7 +876,8 @@ const SettingsScreen = {
       .then((body) => {
         this.elements.network.client.ethernet.mode.value = body.mode || 'dhcp';
         this.elements.network.client.ethernet.ip.value = body.options.ipaddr || '';
-        this.elements.network.client.ethernet.netmask.value = body.options.netmask || '255.255.255.0';
+        this.elements.network.client.ethernet.netmask.value =
+          body.options.netmask || '255.255.255.0';
         this.elements.network.client.ethernet.gateway.value = body.options.gateway || '';
         const ethernetEls = [
           this.elements.network.client.ethernet.ipLabel,
