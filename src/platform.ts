@@ -86,7 +86,6 @@ export function getOS(): string {
         let id = line.substring(3, line.length);
         // Remove any quotation marks
         id = id.replace(/"/g, '');
-        console.log('*** OS id is :' + id);
         switch(id) {
           case 'ubuntu':
             return 'linux-ubuntu';
