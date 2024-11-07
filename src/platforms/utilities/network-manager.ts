@@ -37,6 +37,13 @@ class NetworkManager {
   private systemBus = DBus.getBus('system');
 
   /**
+   * Disconnect the system bus.
+   */
+  stop(): void {
+    this.systemBus.disconnect();
+  }
+
+  /**
    * Get a list of network adapters from the system network manager.
    *
    * @returns {Promise<string[]>} An array of DBus object paths.
@@ -147,28 +154,27 @@ class NetworkManager {
    */
   getDeviceConnection(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      const systemBus = this.systemBus;
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',
-        function (error, iface) {
+        (error, iface) => {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          iface.getProperty('ActiveConnection', function (error, activeConnectionPath) {
+          iface.getProperty('ActiveConnection', (error, activeConnectionPath) => {
             if (error) {
               console.error(error);
               reject();
               return;
             }
-            systemBus.getInterface(
+            this.systemBus.getInterface(
               'org.freedesktop.NetworkManager',
               activeConnectionPath,
               'org.freedesktop.NetworkManager.Connection.Active',
-              function (error, iface) {
+              (error, iface) => {
                 if (error) {
                   console.error(error);
                   reject();
@@ -297,29 +303,28 @@ class NetworkManager {
    * @returns {Promise<Array<AddressData>>} Promise resolves with IP4Config object.
    */
   getDeviceIp4Config(path: string): Promise<Array<AddressData>> {
-    const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',
-        function (error, iface) {
+        (error, iface) => {
           if (error) {
             console.error(error);
             reject();
             return;
           }
-          iface.getProperty('Ip4Config', function (error, ip4ConfigPath) {
+          iface.getProperty('Ip4Config', (error, ip4ConfigPath) => {
             if (error) {
               console.error(error);
               reject();
               return;
             }
-            systemBus.getInterface(
+            this.systemBus.getInterface(
               'org.freedesktop.NetworkManager',
               ip4ConfigPath,
               'org.freedesktop.NetworkManager.IP4Config',
-              function (error, iface) {
+              (error, iface) => {
                 if (error) {
                   console.error(error);
                   reject();
@@ -350,9 +355,8 @@ class NetworkManager {
    * @returns {Promise<string>} The SSID of the access point.
    */
   getAccessPointSsid(path: string): Promise<string> {
-    const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
@@ -386,9 +390,8 @@ class NetworkManager {
    * @returns {Promise<number>} The strength of the signal as a percentage.
    */
   getAccessPointStrength(path: string): Promise<number> {
-    const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
@@ -420,13 +423,12 @@ class NetworkManager {
    * @returns {Promise<boolean>} true if encrypted, false if not.
    */
   async getAccessPointSecurity(path: string): Promise<boolean> {
-    const systemBus = this.systemBus;
     const wpaFlagRequest = new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
-        function (error, iface) {
+        (error, iface) => {
           if (error) {
             console.error(error);
             reject();
@@ -446,7 +448,7 @@ class NetworkManager {
       );
     });
     const wpa2FlagRequest = new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.AccessPoint',
@@ -536,9 +538,8 @@ class NetworkManager {
    * @returns {Promise<string>} Promise resolves with the DBUS object path of an access point.
    */
   getActiveAccessPoint(path: string): Promise<string> {
-    const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device.Wireless',
@@ -632,9 +633,8 @@ class NetworkManager {
     secure: boolean,
     password: string
   ): Promise<void> {
-    const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         '/org/freedesktop/NetworkManager',
         'org.freedesktop.NetworkManager',
@@ -695,9 +695,8 @@ class NetworkManager {
    *   deactivation or rejects with an Error on failure.
    */
   disconnectNetworkDevice(path: string): Promise<void> {
-    const systemBus = this.systemBus;
     return new Promise((resolve, reject) => {
-      systemBus.getInterface(
+      this.systemBus.getInterface(
         'org.freedesktop.NetworkManager',
         path,
         'org.freedesktop.NetworkManager.Device',

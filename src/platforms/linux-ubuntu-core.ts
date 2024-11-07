@@ -14,6 +14,13 @@ import { LanMode, NetworkAddresses, WirelessNetwork } from './types';
 
 export class LinuxUbuntuCorePlatform extends BasePlatform {
   /**
+   * Disconnect NetworkManager.
+   */
+  stop(): void {
+    NetworkManager.stop();
+  }
+
+  /**
    * Get the current addresses for Wi-Fi and LAN.
    *
    * @returns {Promise<NetworkAddresses>} Promise that resolves with
