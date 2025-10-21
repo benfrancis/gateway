@@ -1,5 +1,5 @@
 /*
- * WebThings Gateway Default Configuration.
+ * Krellian Hub Production Configuration.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,10 +18,10 @@ module.exports = {
 
   ports: {
     // HTTPS port
-    https: 4443,
+    https: 43,
 
     // HTTP port
-    http: 8080,
+    http: 80,
 
     // IPC port -- changing this will likely break all add-ons
     ipc: 9500,
@@ -79,7 +79,7 @@ module.exports = {
 
       // Base SSID to use for captive portal (suffix will include MAC address
       // components)
-      ssid_base: 'Krellian Hub',
+      ssid_base: 'WebThings Gateway',
     },
   },
 

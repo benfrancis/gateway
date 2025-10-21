@@ -26,7 +26,9 @@ fi
 # Make sure the root user owns the .webthings data directory
 chown -R root:root /root/.webthings
 
-# Run the gateway
+# Store data in root's home directory
 export WEBTHINGS_HOME=/root/.webthings
-#su node -c "cd /home/node/webthings/gateway && ./run-app.sh"
-cd /root/webthings/gateway && ./run-app.sh
+
+# Run the gateway as root with production configuration
+cd /root/webthings/gateway
+NODE_ENV=production ./run-app.sh
