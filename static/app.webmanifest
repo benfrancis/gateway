@@ -1,6 +1,6 @@
 {
-  "name": "WebThings Gateway",
-  "short_name": "WebThings",
+  "name": "Krellian Hub",
+  "short_name": "Krellian Hub",
   "start_url": "/",
   "display": "standalone",
   "description": "Web of Things Gateway",

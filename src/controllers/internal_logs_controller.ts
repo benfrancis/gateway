@@ -39,7 +39,7 @@ function build(): express.Router {
       '<html lang="en">' +
       '<head>' +
       '<meta charset="utf-8">' +
-      '<title>Logs - WebThings Gateway</title>' +
+      '<title>Logs - Krellian Hub</title>' +
       '</head>' +
       '<body>' +
       '<ul>';

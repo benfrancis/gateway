@@ -79,7 +79,7 @@ module.exports = {
 
       // Base SSID to use for captive portal (suffix will include MAC address
       // components)
-      ssid_base: 'WebThings Gateway',
+      ssid_base: 'Krellian Hub',
     },
   },
 
