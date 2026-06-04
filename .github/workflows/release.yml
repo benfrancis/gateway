@@ -78,6 +78,8 @@ jobs:
           balena os configure "${IMAGE_PATH}" --fleet "${BALENA_FLEET}"
           # Set the default hostname of the OS image to gateway
           balena config write --drive "${IMAGE_PATH}" hostname gateway
+          # Add a public SSH key so anyone with the corresponding private key can SSH in
+          balena config write --drive "${IMAGE_PATH}" os.sshKeys '["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAXfEChAW3pGzW19PKOLAyz/icmCRTL9klmA9h5x9Ef6 admin@krellian.com"]'
           echo "image_path=${IMAGE_PATH}" >> "$GITHUB_OUTPUT"
 
       - name: Preload gateway release into image
